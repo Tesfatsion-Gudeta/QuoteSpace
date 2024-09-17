@@ -12,7 +12,11 @@ const qouteSchema=new mongoose.Schema({
         type:String,
         required:true,
         
-    }
+    },
+    comments:[String],
+    likes:[String],
+    author:{},
+    createdAt:{type:Date,default:Date.now()}
 })
 
 const Qoute=mongoose.model('Qoute',qouteSchema)
