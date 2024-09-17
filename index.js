@@ -3,7 +3,7 @@ const mongoose=require('mongoose')
 require('dotenv').config()
 const app=express()
 const writings=require('./routes/writings')
-const qoutes=require('./routes/qoutes')
+const qoutes=require('./routes/qoutes.js')
 
 
 
