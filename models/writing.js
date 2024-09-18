@@ -1,6 +1,5 @@
 const mongoose=require('mongoose')
 const Joi=require('joi')
-const User=require('./user')
 
 const writingSchema=new mongoose.Schema({
     text:{
@@ -9,13 +8,16 @@ const writingSchema=new mongoose.Schema({
         maxLength:5000,
         required:true
     },
-    comments:[String],
+    comments:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Comment'
+    }],
     likes:[{type:mongoose.Schema.ObjectId,ref:'User'}],
     author:{type:mongoose.Schema.Types.ObjectId,ref:'User'},
     createdAt:{type:Date,default:Date.now()}
 })
 
-const Writing=mongoose.model('writing',writingSchema)
+const Writing=mongoose.model('Writing',writingSchema)
 
 //input validation
 

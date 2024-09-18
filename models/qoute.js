@@ -13,9 +13,12 @@ const qouteSchema=new mongoose.Schema({
         required:true,
         
     },
-    comments:[String],
-    likes:[String],
-    author:{},
+    comments:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Comment'
+    }],
+    likes:[{type:mongoose.Schema.ObjectId,ref:'User'}],
+    author:{type:mongoose.Schema.Types.ObjectId,ref:'User'},
     createdAt:{type:Date,default:Date.now()}
 })
 

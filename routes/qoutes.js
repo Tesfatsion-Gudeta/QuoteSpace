@@ -3,11 +3,29 @@ const router=express.Router()
 const{Qoute,validate}=require('../models/qoute')
 const auth=require('../middleware/auth')
 const admin=require('../middleware/admin')
+const { User } = require('../models/user')
 
 
 //routes
 router.get('/',async(req,res)=>{
-    res.send(await Qoute.find())
+try {
+        const qoutes=await Qoute.find()
+        .populate({path:'author',select:'name'})
+        .select('text reference likes author createdAt')
+    
+        const processedQoutes=qoutes.map(qoute=>({
+            text: quote.text,
+             reference: quote.reference,
+            likesCount: quote.likes.length,  
+            author: quote.author ? quote.author.name : 'Unknown',  
+            createdAt: quote.createdAt
+        }))
+        res.send(processedQoutes)
+} catch (error) {
+    res.status(500).send({message:'error retrieving qoutes.', error:error.message})
+    
+}
+
 })
 router.post('/',auth,async(req,res)=>{
     const {error}=validate(req.body)
