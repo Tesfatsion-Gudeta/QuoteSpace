@@ -6,10 +6,10 @@ const writings=require('./routes/writings')
 const qoutes=require('./routes/qoutes.js')
 const users=require('./models/user.js')
 
-
 app.use('/api/writings',writings)
 app.use('/api/qoutes',qoutes)
 app.use('/api/users',users)
+
 
 
 mongoose.connect(process.env.MONGODB_URI)

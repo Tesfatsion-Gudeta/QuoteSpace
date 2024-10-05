@@ -1,6 +1,7 @@
 const express=require('express')
 const router=express.Router()
 const{Writing,validate}=require('../models/writing')
+const Comment=require('../models/comment')
 const auth=require('../middleware/auth')
 const admin=require('../middleware/admin')
 
@@ -9,14 +10,23 @@ const admin=require('../middleware/admin')
 router.get('/',async(req,res)=>{
     res.send(await Writing.find())
 })
+
+
+//while clicking the publish button
 router.post('/',auth,async(req,res)=>{
     const {error}=validate(req.body)
     if(error) return res.status(400).send(error.details[0].message)
-    const writing= new Writing({
+    let writing= new Writing({
         text:req.body.text
     })
-    res.send(await writing.save())
+
+    writing=await writing.save()
+
+    //returning the saved writing for testing puprose
+    res.send(writing)
 })
+
+//for editing the writing
 router.put('/:id',auth,async(req,res)=>{
     const {error}=validate(req.body)
     if(error) return res.status(400).send(error.details[0].message)
@@ -41,5 +51,54 @@ router.get('/:id',async(req,res)=>{
     res.send(writing)
 
 })
+
+
+             //route handler for comments 
+
+//to get all the comments associated with a specific writing
+router.get('/:writingId/comments',async(req,res)=>{
+    const writing= await Writing.findById(req.params.writingId).populate('comments')
+    if(!writing) return res.status(404).send('writing not found')
+    res.send(writing.comments)
+
+})
+
+//for commenting
+router.post('/:writingId',auth,async(req,res)=>{
+
+    const {error}=validate(req.body)
+    if(error) return res.status(400).send(error.details[0].message)
+    
+    const writing = await Writing.findById(req.params.writingId);
+    if (!writing) return res.status(404).send('Writing not found.');
+  
+    let comment = new Comment({
+        content: req.body.content,
+          author: req.user._id,
+        });
+      
+    comment=await comment.save();
+    writing.comments.push(comment._id);
+    await writing.save();
+      
+    res.send(comment);        
+})
+
+
+//deleting a comment: for the author and admin
+router.delete('/:writingId/:commentId',[auth,admin],async (req,res)=>{
+    const writing=await Writing.findById(req.params.writingId)
+    if(!writing) return res.status(404).send('writing not found')
+    
+    const comment=await Comment.findById(req.params.commentId)
+    if(!comment) return res.status(404).send('comment not found')
+    
+    await Comment.findByIdAndDelete(req.params.commentId);
+    writing.comments = writing.comments.filter(id => id.toString() !== req.params.commentId);
+    await writing.save();          
+    res.send('Comment deleted');
+})
+
+
 
 module.exports=router
