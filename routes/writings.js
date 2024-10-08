@@ -26,7 +26,7 @@ router.post('/',auth,async(req,res)=>{
     res.send(writing)
 })
 
-//for editing the writing
+
 router.put('/:id',auth,async(req,res)=>{
     const {error}=validate(req.body)
     if(error) return res.status(400).send(error.details[0].message)
@@ -53,7 +53,7 @@ router.get('/:id',async(req,res)=>{
 })
 
 
-             //route handler for comments 
+                //route handler for comments 
 
 //to get all the comments associated with a specific writing
 router.get('/:writingId/comments',async(req,res)=>{
@@ -99,6 +99,36 @@ router.delete('/:writingId/:commentId',[auth,admin],async (req,res)=>{
     res.send('Comment deleted');
 })
 
+
+
+                     //route handler for like button
+router.post('/:writingId',auth,async(req,res)=>{
+    const writing=await Writing.findById(req.params.writingId)
+    if(!writing) return res.status(404).send('writing not found')
+    
+    const userId=req.user._id
+    if(writing.likes.includes(userId)) return res.status(400).send('writing already liked')
+    
+    writing.likes.push(userId)
+    await writing.save()
+
+    res.send('writing liked successfully')
+})
+
+router.delete('/:writingId',auth,async(req,res)=>{
+
+    const writing=await Writing.findById(req.params.writingId)
+    if(!writing) return res.status(404).send('writing not found')
+    
+    const userId=req.user._id
+    
+    if(!writing.likes.includes(userId)) return res.status(400).send('writing not liked yet')
+    
+    writing.likes.pull(req.user._id)
+    await writing.save()
+
+    res.send('like removed successfully')
+})
 
 
 module.exports=router
