@@ -6,6 +6,8 @@ const writings=require('./routes/writings')
 const qoutes=require('./routes/qoutes.js')
 const users=require('./routes/users.js')
 
+
+app.use(express.json());
 app.use('/api/writings',writings)
 app.use('/api/qoutes',qoutes)
 app.use('/api/users',users)
