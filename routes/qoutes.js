@@ -56,3 +56,5 @@ router.delete('/:id',[auth,admin],async (req,res)=>{
     if(!qoute) return res.status(404).send('qoute with that specific id is not found')
     res.send(qoute)
 })
+
+module.exports=router

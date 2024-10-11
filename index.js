@@ -4,7 +4,7 @@ require('dotenv').config()
 const app=express()
 const writings=require('./routes/writings')
 const qoutes=require('./routes/qoutes.js')
-const users=require('./models/user.js')
+const users=require('./routes/users.js')
 
 app.use('/api/writings',writings)
 app.use('/api/qoutes',qoutes)
