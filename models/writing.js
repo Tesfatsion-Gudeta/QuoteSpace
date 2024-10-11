@@ -4,7 +4,7 @@ const Joi=require('joi')
 const writingSchema=new mongoose.Schema({
     text:{
         type:String,
-        minLength:50,
+        minLength:3,
         maxLength:5000,
         required:true
     },
@@ -23,7 +23,7 @@ const Writing=mongoose.model('Writing',writingSchema)
 
 function validatewriting(writing){
     const schema=Joi.object({
-        text:Joi.string().min(50).max(5000).required()
+        text:Joi.string().min(3).max(5000).required()
         })
     return schema.validate(writing)
 }
