@@ -1,7 +1,8 @@
 const express=require('express')
 const router=express.Router()
 const{Writing,validate}=require('../models/writing')
-const Comment=require('../models/comment')
+const {Comment,validateComment}=require('../models/comment')
+
 const auth=require('../middleware/auth')
 const admin=require('../middleware/admin')
 
@@ -66,7 +67,7 @@ router.get('/:writingId/comments',async(req,res)=>{
 //for commenting
 router.post('/:writingId',auth,async(req,res)=>{
 
-    const {error}=validate(req.body)
+    const {error}=validateComment(req.body)
     if(error) return res.status(400).send(error.details[0].message)
     
     const writing = await Writing.findById(req.params.writingId);
@@ -74,7 +75,7 @@ router.post('/:writingId',auth,async(req,res)=>{
   
     let comment = new Comment({
         content: req.body.content,
-          author: req.user._id,
+        author: req.user._id
         });
       
     comment=await comment.save();
