@@ -14,7 +14,9 @@ router.get('/me',auth,async(req,res)=>{
 
 })
 
-router.post('/',async(req,res)=>{
+
+//signin
+router.post('/signin',async(req,res)=>{
    const {error}=validate(req.body)
    if(error) return res.status(400).send(error.details[0].message)
    
@@ -31,6 +33,24 @@ router.post('/',async(req,res)=>{
    res.header('x-auth-token',token).send( _.pick(user,['_id','name','email']))
 }) 
 
+
+//login
+router.post('/login',async(req,res)=>{
+
+   const {email,password}=req.body
+
+   if(!email||!password) return res.status(400).send("email and password required")
+   
+   const user=User.findOne({email})
+   if(!user) return res.status(400).send('Invalid email or password')
+   
+   const validPassword = await bcrypt.compare(password, user.password);
+   if (!validPassword) return res.status(400).send('Invalid email or password.')
+   
+   const token = user.generateAuthToken()
+   res.header('x-auth-token', token).send('Logged in successfully.')
+
+})
 
 
 //export
