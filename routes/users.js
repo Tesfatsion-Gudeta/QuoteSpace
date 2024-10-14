@@ -5,10 +5,12 @@ const _=require('lodash')
 const bcrypt=require('bcrypt')
 const router=express.Router()
 const auth=require('../middleware/auth')
-const { config } = require('dotenv')
+// const { config } = require('dotenv')
+const config=require('config')
+const jwt=require('jsonwebtoken')
+
 
 //routes
-
 router.get('/me',auth,async(req,res)=>{
    const user= await User.findById(req.user._id).select('-password')
    res.send(user)
@@ -31,6 +33,15 @@ router.post('/signin',async(req,res)=>{
     await user.save()
 
    const token= user.generateAuthToken()
+   const refreshToken = user.generateRefreshToken(); // Generate refresh token
+
+    // Set the refresh token as a cookie
+    res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // Set to true in production
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
    res.header('x-auth-token',token).send( _.pick(user,['_id','name','email']))
 }) 
 
@@ -45,7 +56,7 @@ router.post('/login',async(req,res)=>{
    const user=await User.findOne({email})
    if(!user) return res.status(400).send('Invalid email or password')
    
-   const validPassword=await bcrypt.compare(password,User.password)
+   const validPassword=await bcrypt.compare(password,user.password)
    if(!validPassword) return res.status(400).send('Invalid email or password')
    
    const accessToken=user.generateAuthToken()
@@ -54,7 +65,7 @@ router.post('/login',async(req,res)=>{
    //refreshtoken
    res.cookie('refreshToken',refreshToken,{
       httpOnly:true,
-      secure:true,
+      secure: process.env.NODE_ENV === 'production', // Set to true in production
       sameSite:'strict',
       maxAge:7 * 24 * 60 * 60 * 1000
    })
@@ -70,7 +81,8 @@ router.post('/login',async(req,res)=>{
 
 router.post('/refresh-token',async(req,res)=>{
 
-   const refreshToken=res.cookie.refreshToken
+   const refreshToken = req.cookies.refreshToken
+   console.log('Refresh Token:', refreshToken);
    if(!refreshToken) return res.status(401).send('refresh token required!.')
    
    try{
@@ -80,6 +92,7 @@ router.post('/refresh-token',async(req,res)=>{
          const newAccessToken=user.generateAuthToken()
          res.header('x-auth-token', newAccessToken).send('Token refreshed successfully.');
    }catch(error){
+      console.error('Token verification error:', error);
       res.status(403).send('Invalid or expired refresh token.');
     }
 

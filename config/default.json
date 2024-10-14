@@ -1,4 +1,4 @@
 {
-    "jwtPrivateKey":"",
-    "jwtRefreshKey":""
+    "jwtPrivateKey": "${blog_jwtPrivateKey}",
+    "jwtRefreshKey": "${blog_refreshKey}"
 }
