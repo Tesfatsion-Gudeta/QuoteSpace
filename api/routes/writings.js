@@ -3,8 +3,8 @@ const router=express.Router()
 const{Writing,validate}=require('../models/writing')
 const {Comment,validateComment}=require('../models/comment')
 
-const auth=require('../middleware/auth')
-const admin=require('../middleware/admin')
+const auth=require('../../middleware/auth')
+const admin=require('../../middleware/admin')
 
 //routes
 

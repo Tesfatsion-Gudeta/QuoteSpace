@@ -4,7 +4,7 @@ require('dotenv').config()
 const cookieParser=require('cookie-parser')
 
 const app=express()
-const writings=require('./routes/writings')
+const writings=require('./routes/writings.js')
 const qoutes=require('./routes/qoutes.js')
 const users=require('./routes/users.js')
 
