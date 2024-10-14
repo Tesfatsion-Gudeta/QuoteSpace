@@ -38,6 +38,13 @@ userSchema.methods.generateAuthToken=function(){
 }
 
 
+
+userSchema.methods.generateRefreshToken=function(){
+    const token=jwt.sign({_id:this._id},config.get('jwtPrivateKey'),{expiresIn:'7d'})
+    return token
+}
+
+
 const User=mongoose.model('User',userSchema)
 
 

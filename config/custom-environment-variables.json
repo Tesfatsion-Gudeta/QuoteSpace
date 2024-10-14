@@ -1,3 +1,4 @@
 {
-    "jwtPrivateKey":"blog_jwtPrivateKey"
+    "jwtPrivateKey":"blog_jwtPrivateKey",
+    "jwtRefreshKey":"blog_refreshKey"
 }
