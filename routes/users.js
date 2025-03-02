@@ -9,8 +9,31 @@ require("dotenv").config();
 // const config=require('config')
 const jwt = require("jsonwebtoken");
 const jwtRefreshKey = process.env.JWTREFRESHKEY;
+const passport = require("passport");
+require("../config/passport");
 
 //routes
+
+// ✅ 1. Start Google OAuth
+router.get(
+  "/auth/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+// ✅ 2. Google OAuth Callback
+router.get(
+  "/auth/google/callback",
+  passport.authenticate("google", { session: false }), // Disable sessions (JWT-based)
+  (req, res) => {
+    const token = req.user.token; // Extract JWT token from passport callback
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+    });
+    res.json({ message: "loggedin" }); // Redirect user to frontend dashboard
+  }
+);
+
 router.get("/me", auth, async (req, res) => {
   const user = await User.findById(req.user._id).select("-password");
   res.send(user);

@@ -8,6 +8,11 @@ const jwtPrivateKey = process.env.JWTPRIVATEKEY;
 const jwtRefreshKey = process.env.JWTREFRESHKEY;
 
 const userSchema = new mongoose.Schema({
+  googleId: {
+    type: String,
+    unique: true,
+    sparse: true,
+  },
   name: {
     type: String,
     minLength: 3,
@@ -23,9 +28,12 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true,
+
     minLength: 6,
     maxLength: 1024,
+    required: function () {
+      return !this.googleId;
+    },
   },
   isAdmin: {
     type: Boolean,
