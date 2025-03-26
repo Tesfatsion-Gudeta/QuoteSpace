@@ -14,13 +14,13 @@ require("../config/passport");
 
 //routes
 
-// ✅ 1. Start Google OAuth
+//  Start Google OAuth
 router.get(
   "/auth/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
-// ✅ 2. Google OAuth Callback
+// Google OAuth Callback
 router.get(
   "/auth/google/callback",
   passport.authenticate("google", { session: false }), // Disable sessions (JWT-based)
